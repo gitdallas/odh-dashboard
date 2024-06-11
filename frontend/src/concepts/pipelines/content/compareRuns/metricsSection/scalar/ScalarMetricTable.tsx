@@ -22,8 +22,9 @@ type ScalarMetricTableProps = {
 };
 
 const ScalarMetricTable: React.FC<ScalarMetricTableProps> = ({ runArtifacts, isLoaded }) => {
-  const { columns, data, subColumns } = generateTableStructure(runArtifacts ?? []);
-
+  const foo = generateTableStructure(runArtifacts ?? []);
+  // debugger;
+  const { columns, data, subColumns } = foo;// generateTableStructure(runArtifacts ?? []);
   const [isHideSameRowsChecked, setIsHideSameRowsChecked] = React.useState<boolean>(false);
 
   const hasScalarMetrics = data.length > 0 || !runArtifacts;
@@ -61,16 +62,16 @@ const ScalarMetricTable: React.FC<ScalarMetricTableProps> = ({ runArtifacts, isL
     );
   };
 
-  if (!isLoaded) {
-    return (
-      <Bullseye>
-        <Spinner />
-      </Bullseye>
-    );
-  }
+  // if (!isLoaded) {
+  //   return (
+  //     <Bullseye>
+  //       <Spinner />
+  //     </Bullseye>
+  //   );
+  // }
 
   if (!runArtifacts || runArtifacts.length === 0) {
-    return <CompareRunsEmptyState />;
+    return <CompareRunsEmptyState data-testid="compare-runs-scalar-metrics-empty-state" />;
   }
   if (!hasScalarMetrics) {
     return (

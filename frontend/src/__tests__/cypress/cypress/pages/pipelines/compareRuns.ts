@@ -56,6 +56,55 @@ class CompareRunParamsTable {
   }
 }
 
+class CompareMetricsContent {
+  find() {
+    return cy.findByTestId('compare-runs-metrics-content');
+  }
+  
+  clickScalarMetricsTab() {
+    return this.find().find('button').contains('Scalar metrics').click();
+  }
+  clickConfusionMatrixTab() {
+    return this.find().find('button').contains('Confusion matrix').click();
+  }
+  clickROVCurveTab() {
+    return this.find().find('button').contains('ROC curve').click();
+  }
+
+  findScalarMetricsTable() {
+    return cy.findByTestId('compare-runs-scalar-metrics-table');
+  }
+  findScalarMetricsEmptyState() {
+    return cy.findByTestId('compare-runs-scalar-metrics-empty-state');
+  }
+  findRunName(name: string) {
+    return this.findScalarMetricsTable().contains('th', name);
+  }
+  findParamValue(value: string) {
+    return this.findScalarMetricsTable().contains('td', value);
+  }
+
+  findConfusionMatrixEmptyState() {
+    return cy.findByTestId('compare-runs-confusion-matrix-empty-state');
+  }
+  findConfusionMatrixContent() {
+    return cy.findByTestId('compare-runs-confusion-matrix-content');
+  }
+  findConfusionMatrixRunName(name: string) {
+    return this.findConfusionMatrixContent().findByText(name);
+  }
+  findConfusionMatrixExpandButton() {
+    return this.findConfusionMatrixContent().findByText('Expand');
+  }
+  findConfusionMatrixCollapseButton() {
+    return this.findConfusionMatrixContent().findByText('Collapse');
+  }
+  findConfusionMatrixExpandedGraph() {
+    return cy.findByTestId('confusion-matrix-expanded');
+  }
+}
+
 export const compareRunsGlobal = new CompareRunsGlobal();
 export const compareRunsListTable = new CompareRunsListTable();
 export const compareRunParamsTable = new CompareRunParamsTable();
+export const compareRunsMetricsContent = new CompareMetricsContent();

@@ -21,8 +21,11 @@ import {
   compareRunsGlobal,
   compareRunsListTable,
   compareRunParamsTable,
+  compareRunsMetricsContent,
 } from '~/__tests__/cypress/cypress/pages/pipelines/compareRuns';
 import { mockCancelledGoogleRpcStatus } from '~/__mocks__/mockGoogleRpcStatusKF';
+import * as scalarUtils from '~/concepts/pipelines/content/compareRuns/metricsSection/scalar/utils';
+import ScalarMetricTable from '~/concepts/pipelines/content/compareRuns/metricsSection/scalar/ScalarMetricTable';
 
 const projectName = 'test-project-name';
 const initialMockPipeline = buildMockPipelineV2({ display_name: 'Test pipeline' });
@@ -193,6 +196,135 @@ describe('Compare runs', () => {
       compareRunParamsTable.findParamName('paramOne').should('exist');
       compareRunParamsTable.findParamName('paramTwo').should('not.exist');
       compareRunParamsTable.findParamName('paramThree').should('exist');
+    });
+  });
+
+  describe('Metrics', () => {
+    beforeEach(() => {
+      //       cy.stub(scalarUtils, 'generateTableStructure').returns({
+      //   "columns": [
+      //     {
+      //       "label": "Run name",
+      //       "field": "run-name",
+      //       "isStickyColumn": true,
+      //       "hasRightBorder": true,
+      //       "className": "pf-v5-u-background-color-200",
+      //       "sortable": false
+      //     },
+      //     {
+      //       "label": "Run 1",
+      //       "field": "Run 1",
+      //       "colSpan": 1,
+      //       "sortable": false,
+      //       "modifier": "nowrap",
+      //       "hasRightBorder": true
+      //     },
+      //     {
+      //       "label": "Run 2",
+      //       "field": "Run 2",
+      //       "colSpan": 1,
+      //       "sortable": false,
+      //       "modifier": "nowrap",
+      //       "hasRightBorder": false
+      //     }
+      //   ],
+      //   "subColumns": [
+      //     {
+      //       "label": "Execution name > Artifact name",
+      //       "field": "execution-name-artifact-name",
+      //       "isStickyColumn": true,
+      //       "hasRightBorder": true,
+      //       "className": "pf-v5-u-background-color-200",
+      //       "sortable": false
+      //     },
+      //     {
+      //       "label": "digit-classification > metrics",
+      //       "field": "digit-classification > metrics",
+      //       "sortable": false,
+      //       "modifier": "nowrap",
+      //       "hasRightBorder": true
+      //     },
+      //     {
+      //       "label": "digit-classification > metrics2",
+      //       "field": "digit-classification > metrics2",
+      //       "sortable": false,
+      //       "modifier": "nowrap",
+      //       "hasRightBorder": false
+      //     }
+      //   ],
+      //   "data": [
+      //     {
+      //       "key": "accuracy",
+      //       "values": [
+      //         "92",
+      //         "92"
+      //       ]
+      //     }
+      //   ]
+      // });
+      compareRunsGlobal.visit(projectName, mockExperiment.experiment_id, [
+        mockRun.run_id,
+        mockRun2.run_id,
+      ]);
+    });
+
+    it('shows empty state when the Runs list has no selections', () => {
+      compareRunsListTable.findSelectAllCheckbox().click();
+      compareRunsMetricsContent.findScalarMetricsEmptyState().should('exist');
+    });
+
+    it('displays table data based on selections from Run list', () => {
+      compareRunsMetricsContent.findScalarMetricsTable().should('exist');
+
+      compareRunsListTable.findRowByName('Run 1').should('exist');
+      compareRunsListTable.findRowByName('Run 2').should('exist');
+
+      compareRunsMetricsContent.findRunName('Run 1').should('exist');
+      compareRunsMetricsContent.findRunName('Run 2').should('exist');
+
+      compareRunsMetricsContent.findParamValue('92').should('exist');
+
+      compareRunsMetricsContent.findParamValue('digit-classification > metrics').should('exist');
+      compareRunsMetricsContent.findParamValue('digit-classification > metrics2').should('exist');
+    });
+
+    it('only shows rows with differences when "Hide parameters with no differences" switch is on', () => {
+      compareRunsMetricsContent.findScalarMetricsTable().should('exist');
+
+      compareRunsListTable.findRowByName('Run 1').should('exist');
+      compareRunsListTable.findRowByName('Run 2').should('exist');
+
+      cy.pfSwitch('hide-same-scalar-metrics-switch').click();
+
+      compareRunsMetricsContent.findRunName('Run 1').should('exist');
+      compareRunsMetricsContent.findRunName('Run 2').should('exist');
+
+      compareRunsMetricsContent.findParamValue('digit-classification > metrics').should('exist');
+      compareRunsMetricsContent.findParamValue('digit-classification > metrics2').should('exist');
+
+      compareRunsMetricsContent.findParamValue('92').should('not.exist');
+    });
+
+    it('shows confusion matrix empty state when no runs are selected', () => {
+      compareRunsListTable.findSelectAllCheckbox().click();
+      compareRunsMetricsContent.clickConfusionMatrixTab();
+      compareRunsMetricsContent.findConfusionMatrixEmptyState().should('exist');
+    });
+
+    it('contains confusion matrix', () => {
+      compareRunsMetricsContent.clickConfusionMatrixTab();
+      compareRunsMetricsContent.findConfusionMatrixContent().should('exist');
+      compareRunsMetricsContent.findConfusionMatrixRunName('Run 1').should('exist');
+      compareRunsMetricsContent.findConfusionMatrixRunName('Run 2').should('exist');
+    });
+
+    it('contains expands a confusion matrix', () => {
+      compareRunsMetricsContent.clickConfusionMatrixTab();
+      compareRunsMetricsContent.findConfusionMatrixContent().should('exist');
+      compareRunsMetricsContent.findConfusionMatrixExpandButton().click();
+      compareRunsMetricsContent.findConfusionMatrixExpandedGraph().should('exist');
+      compareRunsMetricsContent.findConfusionMatrixCollapseButton().click();
+      compareRunsMetricsContent.findConfusionMatrixExpandedGraph().should('not.exist');
     });
   });
 });

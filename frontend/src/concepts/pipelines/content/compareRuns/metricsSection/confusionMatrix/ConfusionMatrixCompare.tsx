@@ -111,7 +111,7 @@ const ConfusionMatrixCompare: React.FC<ConfusionMatrixCompareProps> = ({
   return (
     <div style={{ overflowX: 'auto' }}>
       {expandedGraph ? (
-        <Bullseye>
+        <Bullseye data-testid="confusion-matrix-expanded">
           <PipelineRunArtifactSelect
             data={[expandedGraph]}
             setExpandedGraph={(config) => setExpandedGraph(config)}
