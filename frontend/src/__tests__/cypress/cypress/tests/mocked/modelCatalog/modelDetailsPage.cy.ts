@@ -110,6 +110,13 @@ describe('Model details page', () => {
   });
 });
 
+it('Should show fine tune action item with popover', () => {
+  initIntercepts({});
+  modelDetailsPage.visit();
+  modelDetailsPage.findTuneModelButton().click();
+  modelDetailsPage.findTuneModelPopover().should('be.visible');
+});
+
 describe('Model Details loading states', () => {
   beforeEach(() => {
     initIntercepts({});
