@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Card,
+  CardBody,
   Content,
   DescriptionList,
   Icon,
@@ -31,10 +33,15 @@ const ModelDetailsView: React.FC<ModelDetailsViewProps> = ({ model }) => (
           <p data-testid="model-long-description">{model.longDescription}</p>
           <h2>Model Card</h2>
         </Content>
-        <MarkdownView
+        <Card style={{ marginTop: 'var(--pf-t--global--spacer--lg)' }}>
+          <CardBody>
+          <MarkdownView
           data-testid="model-card-markdown"
           markdown={model.readme || 'No model card'}
+          maxHeading={3}
         />
+          </CardBody>
+        </Card>
       </SidebarContent>
       <SidebarPanel>
         <DescriptionList isFillColumns>
